@@ -84,17 +84,24 @@ class TextBlock:
         return ''.join(self.lines)
 
 class Printer:
-    def __init__(self, out=sys.stdout, mode="a"):
+    """Print text to various files/sinks"""
+    def __init__(self, out=sys.stdout, mode="w"):
         self._out = out
         self._open_files = dict()
         if out != sys.stdout:
             self._out = self.open_file(out, mode)
 
     def __del__(self):
+        """Close files on exit
+        
+        This is not really needed given how short the program's lifespan is -
+        the OS will automatically reclaim open file descriptors upon the
+        program's termination. However, it is good practice to cleanup."""
         for f in self._open_files.values():
             f.close()
 
-    def open_file(self, file, mode='a'):
+    def open_file(self, file, mode='w'):
+        """Opens a file for subsequent writes"""
         try: # bad form to filter on type
             if type(str): # assume filename
                 if file in self._open_files:
@@ -106,6 +113,7 @@ class Printer:
                 self._out = file.open(mode)
         except OSError:
             print(f"Could not open file: {file}")
+            sys.exit(1) # everything pivots on being able to write
 
         # track open files to prevent reopens and/or premature closes
         self._open_files[self._out.name] = self._out
@@ -185,34 +193,34 @@ class APIGenerator:
         # will raise ValueError on bad config
         vet_config(config, APIGenerator._CONFIG_KEYS) 
 
-        # path creation 
+        # path specification
         self.base_dir     = pathlib.Path.cwd()
         self.flask_dir    = self.base_dir / config["name"]
         self.config_file  = self.base_dir / config["file"]
-        self.shell_script = self.base_dir / config["script"]
+        self.script       = self.base_dir / (config["script"] + ".py")
 
-        # python gunicorn/flask
+        # python waitress/gunicorn/flask
         self.api          = config["api"]
-        self.gunicorn     = config["gunicorn"]
+        self.wsgi         = config["wsgi"]
         self.dependencies = config["python dependencies"]
 
-        # writing
+        # file writer
         self.printer      = Printer()
         self.print        = self.printer.print
 
-        # state
+        # state: not yet used
         self.env_setup    = False
         self.complete     = False
 
-    # sole point of interface; only public method
-    # to understand class, follow flow of "create"
+    # sole point of interface; only public method.
+    # to understand class in it's entirety, follow flow of "create"
     def do_task(self, task=None):
-        match task:
+        match task: # no fall through, find a way to clean up below
             case "create":
                 self._setup_environment()
                 self._write_files()
                 self._write_executable()
-            case "write": # destructive, be careful
+            case "write":
                 self._write_files()
                 self._write_executable()
             case "script":
@@ -245,9 +253,9 @@ class APIGenerator:
                 "path_to_activate" : pathlib.Path(".venv/Scripts/activate.bat"),
                 "join on"          : "&&"
             }
-        }[os.name] # don't miss this
+        }[os.name]
 
-        # let any exception in run to propogate up to caller
+        # let any exception in subprocess.run propagate up to caller
         subprocess.run(
             cmd_info["join on"].join([
                 f'{cmd_info["source"]}{cmd_info["path_to_activate"]}',
@@ -264,7 +272,7 @@ class APIGenerator:
         # make venv, will clobber existing one
         #
         # TODO: if venv is present, check for required dependencies
-        #       if present leave alone, if missing install after prompt
+        #       if dependencies are present leave alone, if missing install
         try:
             subprocess.run(
                 # sys.executable is the path of the interpreter used to
@@ -297,6 +305,9 @@ class APIGenerator:
         return True
 
     def _setup_environment(self):
+        # idea here is to capture the success/failure of env creation in a
+        # boolean so that it might be used as a precondition for functions
+        # assuming an established env. this boolean has yet to be used tho
         self.env_setup = self._setup_venv() and self._setup_dir_structure()
 
     def _write_init_file(self):
@@ -318,7 +329,7 @@ class APIGenerator:
         ))
         self.print(APIGenerator._ROUTE_FUNC.format(endpoint))
 
-        # write if else ladder for methods, generalize eventually
+        # TODO: generalize below
         if "POST" in props["methods"]:
             self.print(TextBlock(APIGenerator._INDENT).indent([
                 'if request.method == "POST":'
@@ -326,7 +337,7 @@ class APIGenerator:
                     'pass'
             ]))
 
-        # print get
+        # print get TODO: put a more meaningful message
         self.print(TextBlock(APIGenerator._INDENT).indent([
             'return "{0}", 200'
         ]).format([endpoint]))
@@ -337,57 +348,26 @@ class APIGenerator:
                 self.printer.open_file((self.flask_dir / props["filename"]))
                 self.print(APIGenerator._API_FILE_HEADER)
                 self.print(APIGenerator._BLUEPRINT_CREATE.format(module))
-                self.print()
+                self.print() # newline
                 for ep in props["endpoints"].items():
                     self._write_endpoint(*ep)
             except OSError:
                 print("Error writing __init__.py")
 
     def _write_executable(self):
-        # TODO: Need to write script for cmd.exe
-        bash_script = TextBlock(indentation=" "*2).write_lines([
-            '#!/usr/bin/env bash',
-            '',
-            'declare -r \\',
-        ]).indent([
-                "CONFIG='{}'".format(self.config_file),
-                "HOST='{}'".format(self.gunicorn["host"]),
-        ]).outdent([
-            "declare -ir PORT={} NUM_WORKERS={} # 8000 is default port".format(
-                self.gunicorn["port"], 
-                self.gunicorn["workers"]
-            ),
-        ]).write_lines([
-            "while getopts 'sq' ARG; do",
-        ]).indent([
-                'case "${ARG}" in'
-        ]).indent([
-                    's)',
-        ]).indent([
-                        '. .venv/bin/activate',
-                        'gunicorn \\',
-                        r' --bind "${HOST}":${PORT} ''\\',
-                        r' --workers ${NUM_WORKERS} ''\\',
-                        # TODO: below f-string is unreadable - fix
-                        f"'{self.flask_dir.name}:api(\"'"
-                        "\"${CONFIG}\"" "'\")' &",
-                        ';;',
-        ]).outdent([
-                    'q) pkill -f gunicorn ;;',
-                    '?) echo "Bad args"; return 1 ;;',
-        ]).outdent([
-                'esac',
-        ]).outdent([
-            'done',
-        ])
-
         try:
-            if os.name == "posix":
-                self.printer.open_file(self.shell_script)
-                self.print(bash_script)
-                self.shell_script.chmod(0o755) # make executable
-            elif os.name == "nt": pass
-        except: pass
+            self.printer.open_file(self.script)
+            self.print(TextBlock(APIGenerator._INDENT).write_lines([
+                "import waitress",
+                f"import {self.flask_dir.name}.__init__ as app",
+                "",
+                'waitress.serve(app.api("{0}"), host="{1}", port={2})'.format(
+                    self.config_file.as_posix(), 
+                    self.wsgi["host"], self.wsgi["port"]
+                ),
+            ]))
+        except:
+            print(f"Failed to write to {self.script}")
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -398,3 +378,21 @@ if __name__ == "__main__":
     APIGenerator(get_config(
         args.config if args.config is not None else "api.toml"
     )).do_task(args.action)
+
+    # NOTE:
+    # Functions/classes are, approximately, written in order of use. If there
+    # is any interest in learning this program's operation, working from top
+    # to bottom won't lead you astray. But to hit the sights see:
+    #   get_config
+    #   (then pass over, but do not spend too much time on:
+    #       TextBlock
+    #       Printer)
+    #   ApiGenerator:
+    #       __init__.py
+    #       do_task <------------main entry point to program after init
+    #
+    # Also, don't bother trying to understand, from the code alone, any of the
+    # writing operations and their gnarly string productions. Unless of course
+    # you are already very familiar with flask apps and string concat/subst. 
+    # Instead, work backward from the contents of the files produced to the
+    # functions that produce it.
