@@ -197,7 +197,7 @@ class APIGenerator:
         self.base_dir     = pathlib.Path.cwd()
         self.flask_dir    = self.base_dir / config["name"]
         self.config_file  = self.base_dir / config["file"]
-        self.script       = self.base_dir / (config["script"] + ".py")
+        self.script       = (self.base_dir/config["script"]).with_suffix(".py")
 
         # python waitress/gunicorn/flask
         self.api          = config["api"]
@@ -265,7 +265,7 @@ class APIGenerator:
                 ],
                 "deactivate",
             ]), 
-            shell="True", check=True
+            shell=True, check=True
         )
 
     def _setup_venv(self) -> bool:
