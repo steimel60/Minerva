@@ -356,8 +356,20 @@ class APIGenerator:
 
     def _write_executable(self):
         try:
+            # specify python interpreter in venv so that it doesnt need to be
+            # activated
+            venv_python = ( 
+                self.base_dir / ".venv" /
+                {
+                    "posix" : "bin/python",
+                    "nt"    : "Scripts/python.exe",
+                }[os.name]
+            )
+
             self.printer.open_file(self.script)
             self.print(TextBlock(APIGenerator._INDENT).write_lines([
+                f"#!{venv_python}",
+                "",
                 "import waitress",
                 f"import {self.flask_dir.name}.__init__ as app",
                 "",
