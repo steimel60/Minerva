@@ -102,7 +102,7 @@ class Printer:
 
     def open_file(self, file, mode='w'):
         """Opens a file for subsequent writes"""
-        try: # bad form to filter on type
+        try: # bad form to filter on type, code to interface instead
             if type(str): # assume filename
                 if file in self._open_files:
                     return
