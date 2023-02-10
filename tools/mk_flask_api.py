@@ -378,6 +378,10 @@ class APIGenerator:
                     self.wsgi["host"], self.wsgi["port"]
                 ),
             ]))
+
+            if os.name == "posix": # need to make executable
+                self.script.chmod(0o755)
+
         except:
             print(f"Failed to write to {self.script}")
         
