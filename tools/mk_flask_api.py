@@ -123,7 +123,10 @@ class Printer:
         # a diversity of writing sources. by making no assumption
         # regarding what object "out" is, anything from a file,
         # to a simple string, or any other sink may be written to via "out"
-        out(text)  
+        try:
+            out(text)
+        except OSError: # need better exception handling
+            print("Could not write to:", out)
     
     def print(self, text='', append_nl=True) -> None:
         Printer._print(
@@ -131,19 +134,9 @@ class Printer:
             str(text) + '\n' if append_nl else str(text)
         )
 
-class APIGenerator:
-    """Given a config file that specifies the parameters of a barebones flask
-       api, create a skeleton for its development.
-    """
-    # CONFIG #################################################################
+PRINTER = Printer()
 
-    SUPPORTED_MODES = {"create", "write", "script"} # only public class constant
-    _CONFIG_KEYS = { # required keys in global table of toml file
-        "name", "api", "file", "script", "python dependencies"
-    }
-
-    # FILE GENERATION STRINGS ################################################
-
+class FlaskFiller:
     _SEP                = " "
     _INDENT             = _SEP*4
     _BLUEPRINT_CREATE   = 'bp = Blueprint("{0}", __name__, url_prefix="/{0}")'
@@ -185,7 +178,68 @@ class APIGenerator:
         ')',
     ])
 
-    ###########################################################################
+    def __init__(self, api, flask_dir=pathlib.Path.cwd()):
+        self.api       = api
+        self.flask_dir = flask_dir
+        self.printer   = PRINTER # assumes all writes are sequential (they are)
+        self.print     = self.printer.print
+
+    def fill(self):
+        self._write_init_file()
+        self._write_api_files()
+
+    def _write_init_file(self):
+        try:
+            self.printer.open_file((self.flask_dir / "__init__.py"))
+            self.print(FlaskFiller._INIT_HEADER)
+            for module in self.api:
+                # format method below expects list arg, hence [module]
+                self.print(FlaskFiller._INIT_BODY.format([module]))
+            self.print(FlaskFiller._INIT_FOOTER)
+        except OSError:
+            print("Error writing __init__.py")
+
+    def _write_endpoint(self, endpoint, props):
+        self.print(
+            FlaskFiller._ROUTE_DECORATOR.format(
+                props["path"],
+                '[ "' + '", "'.join(props["methods"]) + '" ]'
+        ))
+        self.print(FlaskFiller._ROUTE_FUNC.format(endpoint))
+
+        # TODO: generalize below
+        if "POST" in props["methods"]:
+            self.print(TextBlock(FlaskFiller._INDENT).indent([
+                'if request.method == "POST":'
+            ]).indent([
+                    'pass'
+            ]))
+
+        # print get TODO: put a more meaningful message
+        self.print(TextBlock(FlaskFiller._INDENT).indent([
+            'return "{0}", 200'
+        ]).format([endpoint]))
+
+    def _write_api_files(self):
+        for module, props in self.api.items():
+            try:
+                self.printer.open_file((self.flask_dir / props["filename"]))
+                self.print(FlaskFiller._API_FILE_HEADER)
+                self.print(FlaskFiller._BLUEPRINT_CREATE.format(module))
+                self.print() # newline
+                for ep in props["endpoints"].items():
+                    self._write_endpoint(*ep)
+            except OSError:
+                print("Error writing __init__.py")
+
+class APIGenerator:
+    """Given a config file that specifies the parameters of a barebones flask
+       api, create a skeleton for its development.
+    """
+    SUPPORTED_MODES = {"create", "write", "script"} # only public class constant
+    _CONFIG_KEYS = { # required keys in global table of toml file
+        "name", "api", "file", "script", "python dependencies"
+    }
 
     def __init__(self, config):
         # TODO: update instance variables to reflect access
@@ -204,9 +258,10 @@ class APIGenerator:
         self.wsgi         = config["wsgi"]
         self.dependencies = config["python dependencies"]
 
-        # file writer
-        self.printer      = Printer()
+        # writers
+        self.printer      = PRINTER # all writes made are sync
         self.print        = self.printer.print
+        self.flask_filler = FlaskFiller(self.api, self.flask_dir)
 
         # state: not yet used
         self.env_setup    = False
@@ -218,10 +273,10 @@ class APIGenerator:
         match task: # no fall through, find a way to clean up below
             case "create":
                 self._setup_environment()
-                self._write_files()
+                self.flask_filler.fill()
                 self._write_executable()
             case "write":
-                self._write_files()
+                self.flask_filler.fill()
                 self._write_executable()
             case "script":
                 self._write_executable()
@@ -229,10 +284,6 @@ class APIGenerator:
                 pass
             case _:
                 pass
-            
-    def _write_files(self):
-        self._write_init_file()
-        self._write_api_files()
 
     def _install_dependencies(self):
         # Assumes that subprocess will pick up whatever is in $env:COMSPEC to
@@ -310,51 +361,8 @@ class APIGenerator:
         # assuming an established env. this boolean has yet to be used tho
         self.env_setup = self._setup_venv() and self._setup_dir_structure()
 
-    def _write_init_file(self):
-        try:
-            self.printer.open_file((self.flask_dir / "__init__.py"))
-            self.print(APIGenerator._INIT_HEADER)
-            for module in self.api:
-                # format method below expects list arg, hence [module]
-                self.print(APIGenerator._INIT_BODY.format([module]))
-            self.print(APIGenerator._INIT_FOOTER)
-        except OSError:
-            print("Error writing __init__.py")
-
-    def _write_endpoint(self, endpoint, props):
-        self.print(
-            APIGenerator._ROUTE_DECORATOR.format(
-                props["path"],
-                '[ "' + '", "'.join(props["methods"]) + '" ]'
-        ))
-        self.print(APIGenerator._ROUTE_FUNC.format(endpoint))
-
-        # TODO: generalize below
-        if "POST" in props["methods"]:
-            self.print(TextBlock(APIGenerator._INDENT).indent([
-                'if request.method == "POST":'
-            ]).indent([
-                    'pass'
-            ]))
-
-        # print get TODO: put a more meaningful message
-        self.print(TextBlock(APIGenerator._INDENT).indent([
-            'return "{0}", 200'
-        ]).format([endpoint]))
-
-    def _write_api_files(self):
-        for module, props in self.api.items():
-            try:
-                self.printer.open_file((self.flask_dir / props["filename"]))
-                self.print(APIGenerator._API_FILE_HEADER)
-                self.print(APIGenerator._BLUEPRINT_CREATE.format(module))
-                self.print() # newline
-                for ep in props["endpoints"].items():
-                    self._write_endpoint(*ep)
-            except OSError:
-                print("Error writing __init__.py")
-
     def _write_executable(self):
+
         try:
             # specify python interpreter in venv so that it doesnt need to be
             # activated
@@ -367,7 +375,7 @@ class APIGenerator:
             )
 
             self.printer.open_file(self.script)
-            self.print(TextBlock(APIGenerator._INDENT).write_lines([
+            self.print(TextBlock(indentation=" "*2).write_lines([
                 f"#!{venv_python}",
                 "",
                 "import waitress",
