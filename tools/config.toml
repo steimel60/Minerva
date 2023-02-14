@@ -6,9 +6,10 @@ image = "python:alpine3.16"
 workdir = "/app"
 
 [python]
-dependencies = [ "gunicorn", "flask" ]
+dependencies = [ "waitress", "gunicorn", "flask" ]
 
 [wsgi]
+script = "server_ctl"
 host = "localhost"
 port = 3005
 workers = 1

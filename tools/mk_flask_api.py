@@ -239,7 +239,7 @@ class APIGenerator:
     """Given a config file that specifies the parameters of a barebones flask
        api, create a skeleton for its development.
     """
-    SUPPORTED_MODES = {"create", "write", "docker"} # only public class constant
+    SUPPORTED_MODES = {"create", "write", "docker", "script"} # only public class constant
     _CONFIG_KEYS = { # required keys in global table of toml file
         "name", "api", "python", "wsgi", "docker"
     }
@@ -254,13 +254,14 @@ class APIGenerator:
         self.config_file  = config["file path"]
         self.base_dir     = pathlib.Path.cwd()
         self.flask_dir    = self.base_dir / config["name"]
+        self.script       = self.base_dir / config["wsgi"]["script"]
         self.dockerfile   = self.base_dir / "Dockerfile"
         self.requirements = self.base_dir / "requirements.txt"
 
         # python waitress/gunicorn/flask
+        self.dependencies = config["python"]["dependencies"]
         self.api          = config["api"]
         self.wsgi         = config["wsgi"]
-        self.dependencies = config["python"]["dependencies"]
 
         # docker
         self.docker       = config["docker"]
@@ -277,16 +278,18 @@ class APIGenerator:
     # sole point of interface; only public method.
     # to understand class in it's entirety, follow flow of "create"
     def do_task(self, task=None):
-        match task: # no fall through, find a way to clean up below
+        match task:
             case "create":
                 self._setup_environment()
-                self.flask_filler.fill()
-                self._write_dockerfile()
+                self.do_task("write")
             case "write":
                 self.flask_filler.fill()
-                self._write_dockerfile()
+                self.do_task("docker")
+                self.do_task("script")
             case "docker":
                 self._write_dockerfile()
+            case "script":
+                self._write_executable()
             case "clean":
                 pass
             case _:
@@ -369,6 +372,38 @@ class APIGenerator:
         # boolean so that it might be used as a precondition for functions
         # assuming an established env. this boolean has yet to be used tho
         self.env_setup = self._setup_venv() and self._setup_dir_structure()
+
+    def _write_executable(self):
+        # leave this func in case docker is not available
+        try:
+            # specify python interpreter in venv so that it doesnt need to be
+            # activated
+            venv_python = ( 
+                self.base_dir / ".venv" /
+                {
+                    "posix" : "bin/python",
+                    "nt"    : "Scripts/python.exe",
+                }[os.name]
+            )
+
+            self.printer.open_file(self.script)
+            self.print(TextBlock(indentation=" "*2).write_lines([
+                f"#!{venv_python}",
+                "",
+                "import waitress",
+                f"import {self.flask_dir.name}.__init__ as app",
+                "",
+                'waitress.serve(app.factory("{0}"), host="{1}", port={2})'.format(
+                    self.config_file.as_posix(), 
+                    self.wsgi["host"], self.wsgi["port"]
+                ),
+            ]))
+
+            if os.name == "posix": # need to make executable
+                self.script.chmod(0o755)
+
+        except Exception as e:
+            print(f"Failed to write to {self.script}: {e}")
 
     def _write_dockerfile(self):
         try: # all file paths have to be relative to current directory, I think
