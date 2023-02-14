@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import pathlib
 import subprocess
@@ -9,7 +10,9 @@ def get_config(filename: str) -> dict:
     """Parse toml config"""
     try:
         with open(filename, "rb") as fh: # tomllib needs binary rep
-            return tomllib.load(fh)
+            config = tomllib.load(fh)
+            config["file path"] = pathlib.Path(filename).resolve() # for future reference
+            return config
     except OSError:
         print(
             f"Couldn't access file: {filename}\n"
@@ -149,7 +152,7 @@ class FlaskFiller:
         'import tomllib',
         'import flask',
         '',
-        'def api(config=None):',
+        'def factory(config):',
     ]).indent([
             'app = flask.Flask(__name__)',
             'with open(config, "rb") as fh:',
@@ -236,9 +239,9 @@ class APIGenerator:
     """Given a config file that specifies the parameters of a barebones flask
        api, create a skeleton for its development.
     """
-    SUPPORTED_MODES = {"create", "write", "script"} # only public class constant
+    SUPPORTED_MODES = {"create", "write", "docker"} # only public class constant
     _CONFIG_KEYS = { # required keys in global table of toml file
-        "name", "api", "file", "script", "python dependencies"
+        "name", "api", "python", "wsgi", "docker"
     }
 
     def __init__(self, config):
@@ -248,15 +251,19 @@ class APIGenerator:
         vet_config(config, APIGenerator._CONFIG_KEYS) 
 
         # path specification
+        self.config_file  = config["file path"]
         self.base_dir     = pathlib.Path.cwd()
         self.flask_dir    = self.base_dir / config["name"]
-        self.config_file  = self.base_dir / config["file"]
-        self.script       = (self.base_dir/config["script"]).with_suffix(".py")
+        self.dockerfile   = self.base_dir / "Dockerfile"
+        self.requirements = self.base_dir / "requirements.txt"
 
         # python waitress/gunicorn/flask
         self.api          = config["api"]
         self.wsgi         = config["wsgi"]
-        self.dependencies = config["python dependencies"]
+        self.dependencies = config["python"]["dependencies"]
+
+        # docker
+        self.docker       = config["docker"]
 
         # writers
         self.printer      = PRINTER # all writes made are sync
@@ -274,13 +281,13 @@ class APIGenerator:
             case "create":
                 self._setup_environment()
                 self.flask_filler.fill()
-                self._write_executable()
+                self._write_dockerfile()
             case "write":
                 self.flask_filler.fill()
-                self._write_executable()
-            case "script":
-                self._write_executable()
-            case "teardown":
+                self._write_dockerfile()
+            case "docker":
+                self._write_dockerfile()
+            case "clean":
                 pass
             case _:
                 pass
@@ -293,6 +300,7 @@ class APIGenerator:
         #
         # TODO: Analyze other production build scripts to see how they
         #       handle multiplatform installation.
+        # might just replace this by writing a requirements file
         cmd_info = {
             "posix" : {
                 "source"           : "source ", # notice space
@@ -314,6 +322,7 @@ class APIGenerator:
                     f"python -m pip install {d}"
                     for d in self.dependencies
                 ],
+                "pip freeze >requirements.txt",
                 "deactivate",
             ]), 
             shell=True, check=True
@@ -361,37 +370,27 @@ class APIGenerator:
         # assuming an established env. this boolean has yet to be used tho
         self.env_setup = self._setup_venv() and self._setup_dir_structure()
 
-    def _write_executable(self):
-
-        try:
-            # specify python interpreter in venv so that it doesnt need to be
-            # activated
-            venv_python = ( 
-                self.base_dir / ".venv" /
-                {
-                    "posix" : "bin/python",
-                    "nt"    : "Scripts/python.exe",
-                }[os.name]
-            )
-
-            self.printer.open_file(self.script)
-            self.print(TextBlock(indentation=" "*2).write_lines([
-                f"#!{venv_python}",
-                "",
-                "import waitress",
-                f"import {self.flask_dir.name}.__init__ as app",
-                "",
-                'waitress.serve(app.api("{0}"), host="{1}", port={2})'.format(
-                    self.config_file.as_posix(), 
-                    self.wsgi["host"], self.wsgi["port"]
-                ),
+    def _write_dockerfile(self):
+        try: # all file paths have to be relative to current directory, I think
+            self.printer.open_file(self.dockerfile)
+            self.print(TextBlock().write_lines([
+                f'FROM {self.docker["image"]}',
+                f'WORKDIR {self.docker["workdir"]}',
+                f"COPY {self.config_file.name} requirements.txt .",
+                "RUN pip install --no-cache-dir -r requirements.txt",
+                f"COPY {self.flask_dir.name} {self.flask_dir.name}/",
+                "CMD {}".format(json.dumps(
+                    [
+                        "gunicorn", 
+                        "--bind", 
+                        f'0.0.0.0:{self.wsgi["port"]}', 
+                        f'{self.flask_dir.name}:factory("{self.config_file.name}")',
+                    ]
+                )),
+                f'EXPOSE {self.wsgi["port"]}',
             ]))
-
-            if os.name == "posix": # need to make executable
-                self.script.chmod(0o755)
-
         except:
-            print(f"Failed to write to {self.script}")
+            print(f"Failed to write to {self.dockerfile}")
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -400,7 +399,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     APIGenerator(get_config(
-        args.config if args.config is not None else "api.toml"
+        args.config if args.config is not None else "config.toml"
     )).do_task(args.action)
 
     # NOTE:

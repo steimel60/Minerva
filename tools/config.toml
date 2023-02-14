@@ -1,12 +1,16 @@
-name = "bridge"
+name = "api"
 author = "Matthew Novitt"
-file = "api.toml" # must be the same name as the file containing this!
-script = "server_ctl"
-"python dependencies" = [ "waitress", "gunicorn", "flask" ]
+
+[docker]
+image = "python:alpine3.16"
+workdir = "/app"
+
+[python]
+dependencies = [ "gunicorn", "flask" ]
 
 [wsgi]
 host = "localhost"
-port = 8002
+port = 3005
 workers = 1
 
 [api.auth]
