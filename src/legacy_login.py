@@ -124,7 +124,7 @@ def get_is_pw_valid(password: str) -> list[bool, str]:
         valid = False
         msg += "\n\t- At least 1 numeric value required."
 
-    return (valid, msg)
+    return [valid, msg]
 
 def make_account(org_conn, acct_conn, wa_conn, org_id, acct_name, acct_pw):
     pw_check = get_is_pw_valid(acct_pw)
