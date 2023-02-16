@@ -411,7 +411,7 @@ class APIGenerator:
             self.print(TextBlock().write_lines([
                 f'FROM {self.docker["image"]}',
                 f'WORKDIR {self.docker["workdir"]}',
-                f"COPY {self.config_file.name} requirements.txt .",
+                f"COPY {self.config_file.name} requirements.txt ./",
                 "RUN pip install --no-cache-dir -r requirements.txt",
                 f"COPY {self.flask_dir.name} {self.flask_dir.name}/",
                 "CMD {}".format(json.dumps(
