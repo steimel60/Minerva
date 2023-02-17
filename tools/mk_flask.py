@@ -377,9 +377,7 @@ class APIGenerator:
                 }[os.name]
             )
 
-            if os.name == "posix": # need to make executable
-                self.script.chmod(0o755)
-            elif os.name == "nt": # make it a py file so shebang can work
+            if os.name == "nt": # make it a py file so shebang can work
                 self.script = self.script.with_suffix(".py")
 
             self.printer.open_file(self.script)
@@ -400,6 +398,9 @@ class APIGenerator:
                     self.wsgi["host"], self.wsgi["port"]
                 ),
             ]))
+
+            if os.name == "posix": # need to make executable
+                self.script.chmod(0o755)
         except Exception as e:
             print(f"Failed to write to {self.script}: {e}")
 
@@ -456,3 +457,4 @@ if __name__ == "__main__":
     # you are already very familiar with flask apps and string concat/subst. 
     # Instead, work backward from the contents of the files produced to the
     # functions that produce it.
+
