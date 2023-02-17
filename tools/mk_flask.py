@@ -6,23 +6,23 @@ import subprocess
 import sys
 import tomllib
 
-def get_config(filename: str) -> dict:
+def get_config(file_path: pathlib.Path) -> dict:
     """Parse toml config"""
     try:
-        with open(filename, "rb") as fh: # tomllib needs binary rep
+        with file_path.open("rb") as fh: # tomllib needs binary rep
             config = tomllib.load(fh)
-            config["file path"] = pathlib.Path(filename).resolve() # for future reference
+            config["file path"] = file_path.resolve() # for future reference
             return config
     except OSError:
         print(
-            f"Couldn't access file: {filename}\n"
+            f"Couldn't access file: {file_path}\n"
             f"Ensure it is in the current directory: {pathlib.Path.cwd()} "
             "and has read permission"
         )
         sys.exit(1)
     except tomllib.TOMLDecodeError:
         print(
-           f"Bad config file: {filename}"
+           f"Bad config file: {file_path}"
             "Make sure its contents are valid toml"
         )
         sys.exit(1)
@@ -239,12 +239,12 @@ class APIGenerator:
     """Given a config file that specifies the parameters of a barebones flask
        api, create a skeleton for its development.
     """
-    SUPPORTED_MODES = {"create", "write", "docker", "script"} # only public class constant
+    SUPPORTED_MODES = {"api", "artifacts"} # only public class constant
     _CONFIG_KEYS = { # required keys in global table of toml file
         "name", "api", "python", "wsgi", "docker"
     }
 
-    def __init__(self, config):
+    def __init__(self, config, workdir=None):
         # TODO: update instance variables to reflect access
 
         # will raise ValueError on bad config
@@ -253,16 +253,18 @@ class APIGenerator:
         # path specification
         self.config_file  = config["file path"]
         self.base_dir     = pathlib.Path.cwd()
-        self.flask_dir    = self.base_dir / config["name"]
         self.script       = self.base_dir / config["wsgi"]["script"]
         self.dockerfile   = self.base_dir / "Dockerfile"
         self.requirements = self.base_dir / "requirements.txt"
+        self.work_dir     = work_dir if work_dir is not None else self.base_dir
+        self.flask_dir    = self.work_dir / config["name"]
 
         # python waitress/gunicorn/flask
-        self.dependencies = config["python"]["dependencies"]
         self.api          = config["api"]
         self.wsgi         = config["wsgi"]
-
+        self.dependencies = set(config["python"]["dependencies"])
+        self.dependencies.add("flask") # ensure that flask is in dependencies
+        
         # docker
         self.docker       = config["docker"]
 
@@ -275,17 +277,18 @@ class APIGenerator:
         self.env_setup    = False
         self.complete     = False
 
-    # sole point of interface; only public method.
-    # to understand class in it's entirety, follow flow of "create"
+    # sole point of interface; only public method
     def do_task(self, task=None):
         match task:
-            case "create":
-                self._setup_environment()
-                self.do_task("write")
-            case "write":
+            case "api":
+                self._setup_dir_structure() # persist to git
+                self.do_task("flask") # persist to git
+            case "artifacts":
+                self._setup_venv() # .gitignore
+                self.do_task("docker") # persist to git
+                self.do_task("script") # .gitignore
+            case "flask":
                 self.flask_filler.fill()
-                self.do_task("docker")
-                self.do_task("script")
             case "docker":
                 self._write_dockerfile()
             case "script":
@@ -323,7 +326,7 @@ class APIGenerator:
                 f'{cmd_info["source"]}{cmd_info["path_to_activate"]}',
                 *[
                     f"python -m pip install {d}"
-                    for d in self.dependencies
+                    for d in list(self.dependencies) # self.dep is a set
                 ],
                 "pip freeze >requirements.txt",
                 "deactivate",
@@ -331,7 +334,7 @@ class APIGenerator:
             shell=True, check=True
         )
 
-    def _setup_venv(self) -> bool:
+    def _setup_venv(self):
         # make venv, will clobber existing one
         #
         # TODO: if venv is present, check for required dependencies
@@ -346,13 +349,10 @@ class APIGenerator:
             self._install_dependencies()
         except subprocess.CalledProcessError:
             print(
-                f"Failed to create virtual environment in {self.base_dir}"
+                f"Couldn't make virtual environment in {self.base_dir}\n"
             )
-            return False
 
-        return True
-
-    def _setup_dir_structure(self) -> bool:
+    def _setup_dir_structure(self):
         try:
             # dont allow overwrite
             self.flask_dir.mkdir(exist_ok=False)
@@ -363,15 +363,6 @@ class APIGenerator:
                 (self.flask_dir / props["filename"]).touch()
         except OSError: # could try out exception groups here
             print("Failed to create necessary directory structure")
-            return False
-        
-        return True
-
-    def _setup_environment(self):
-        # idea here is to capture the success/failure of env creation in a
-        # boolean so that it might be used as a precondition for functions
-        # assuming an established env. this boolean has yet to be used tho
-        self.env_setup = self._setup_venv() and self._setup_dir_structure()
 
     def _write_executable(self):
         # leave this func in case docker is not available
@@ -386,11 +377,22 @@ class APIGenerator:
                 }[os.name]
             )
 
+            if os.name == "posix": # need to make executable
+                self.script.chmod(0o755)
+            elif os.name == "nt": # make it a py file so shebang can work
+                self.script = self.script.with_suffix(".py")
+
             self.printer.open_file(self.script)
             self.print(TextBlock(indentation=" "*2).write_lines([
                 f"#!{venv_python}",
                 "",
+                "import os",
+                "import pathlib",
+                "import sys",
                 "import waitress",
+                "",
+                f'sys.path.append(str(pathlib.Path("{self.work_dir.as_posix()}")))',
+                "",
                 f"import {self.flask_dir.name}.__init__ as app",
                 "",
                 'waitress.serve(app.factory("{0}"), host="{1}", port={2})'.format(
@@ -398,22 +400,19 @@ class APIGenerator:
                     self.wsgi["host"], self.wsgi["port"]
                 ),
             ]))
-
-            if os.name == "posix": # need to make executable
-                self.script.chmod(0o755)
-
         except Exception as e:
             print(f"Failed to write to {self.script}: {e}")
 
     def _write_dockerfile(self):
-        try: # all file paths have to be relative to current directory, I think
+        try:
+            # assumes flask_dir is relative to base_dir
             self.printer.open_file(self.dockerfile)
             self.print(TextBlock().write_lines([
                 f'FROM {self.docker["image"]}',
                 f'WORKDIR {self.docker["workdir"]}',
                 f"COPY {self.config_file.name} requirements.txt ./",
                 "RUN pip install --no-cache-dir -r requirements.txt",
-                f"COPY {self.flask_dir.name} {self.flask_dir.name}/",
+                f"COPY src/* {self.flask_dir.name}/", # flattens all dirs in src
                 "CMD {}".format(json.dumps(
                     [
                         "gunicorn", 
@@ -429,13 +428,16 @@ class APIGenerator:
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config")
+    parser.add_argument("-c", "--config", default="config.toml")
+    parser.add_argument("-w", "--workdir", default=".")
     parser.add_argument("action", choices=APIGenerator.SUPPORTED_MODES)
     args = parser.parse_args()
 
-    APIGenerator(get_config(
-        args.config if args.config is not None else "config.toml"
-    )).do_task(args.action)
+    # get absolute paths ahead of directory switch, defaults set in args
+    config   = pathlib.Path(args.config).resolve()
+    work_dir = pathlib.Path(args.workdir).resolve()
+
+    APIGenerator(get_config(config), work_dir).do_task(args.action)
 
     # NOTE:
     # Functions/classes are, approximately, written in order of use. If there

@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# NON DEFAULT IGNORES
+server_ctl*
