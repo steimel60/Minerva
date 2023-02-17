@@ -1,5 +1,11 @@
-import sqlite3 as sql, pathlib
-import organizations as orgs, accounts as accts
+import pathlib
+import sqlite3 as sql
+import organizations as orgs
+import accounts as accts
+import roles
+import permissions as perms
+from relations import acct_role
+from relations import role_permissions as role_perm
 
 def login(org_name: str, username: str, password: str) -> bool:
     if orgs.org_exist(org_name):
@@ -47,7 +53,21 @@ if __name__ == "__main__":
     orgs.create_all_tables(org_conn)
     accts.insert(org_conn, "Steimel60", "easy123")
     accts.insert(org_conn, "Steimel60", "easy123")
-    print(login("Primal", "Steimel60", "easy123"))
     make_account(org_conn, "Steimel60", "Easy123")
-    make_account(org_conn, "User1", "password")
+    make_account(org_conn, "User1", "passworD2")
     make_account(org_conn, "User2", "Password1")
+    roles.insert(org_conn, "Owner")
+    roles.insert(org_conn, "Sales")
+    perms.insert(org_conn, "AddAccount")
+    perms.insert(org_conn, "DeleteAccount")
+    perms.insert(org_conn, "CreateOrder")
+    role_perm.insert(org_conn, "Owner", "AddAccount")
+    role_perm.insert(org_conn, "Owner", "DeleteAccount")
+    role_perm.insert(org_conn, "Sales", "CreateOrder")
+    acct_role.insert(org_conn, "Steimel60", "Owner")
+    acct_role.insert(org_conn, "User1", "Sales")
+    acct_role.insert(org_conn, "User2", "Sales")
+    print(acct_role.get_users_with_role(org_conn, "Sales"))
+    print(acct_role.get_users_with_role(org_conn, "Owner"))
+    print("Permissions of owner:", role_perm.get_permissions_of_role(org_conn, "Owner"))
+    print("Permissions of user, Steimel60: ", role_perm.get_permissions_of_user(org_conn, "Steimel60"))
