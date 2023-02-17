@@ -10,7 +10,7 @@ def create_table(org_conn: sql.Connection):
             CONSTRAINT FK_role FOREIGN KEY (role)
                 REFERENCES roles (role),
             CONSTRAINT FK_perm FOREIGN KEY (perm)
-                REFERENCES permissions (id)
+                REFERENCES permissions (perm)
         )""")
 
 def drop_table(org_conn: sql.Connection):
