@@ -1,0 +1,25 @@
+name = "api"
+
+[python]
+# flask must always be included in the list below
+# additional packages may be added or removed as needed
+dependencies = [ "waitress", "gunicorn", "flask" ]
+
+[wsgi]
+script = "server_ctl"
+host = "localhost"
+port = 3005
+workers = 1
+
+[docker]
+image = "python:alpine3.16"
+workdir = "/app"
+
+[api.auth]
+filename = "auth.py"
+base_url = "auth"
+
+[api.auth.endpoints]
+register = { path = "register", methods = [ "GET", "POST" ] }
+login = { path = "login", methods = [ "GET", "POST" ] }
+logout = { path = "logout", methods = [ "GET" ] }
