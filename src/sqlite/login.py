@@ -1,4 +1,4 @@
-import sqlite3 as sql, os
+import sqlite3 as sql, pathlib
 import organizations as orgs, accounts as accts
 
 def login(org_name: str, username: str, password: str) -> bool:
@@ -36,8 +36,8 @@ def make_account(org_conn: sql.Connection, username: str, password: str):
 
 if __name__ == "__main__":
     # Make sure local Organizations folder exists, can be deleted later
-    if not os.path.exists(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..','Organizations'))):
-        os.mkdir(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..','Organizations')))
+    p = pathlib.Path(__file__).parents[2] / "Organizations" 
+    p.mkdir(exist_ok = True)
 
     org_name = "Primal"
 

@@ -1,11 +1,9 @@
-import sqlite3 as sql, os
-import accounts as accts
-#from relations import npc_settlement
+import sqlite3 as sql, pathlib
+import accounts as accts # For create/drop all tables
 
 def org_exist(org_name: str) -> bool:
     """Check if a database exists for a given organization/company name."""
-    db_path = get_db_path_by_name(org_name)
-    if os.path.exists(db_path): return True
+    if get_db_path_by_name(org_name).exists(): return True
     else: return False
 
 def connect_to_org(org_name: str) -> sql.Connection:
@@ -26,8 +24,8 @@ def add_organization(org_name: str) -> sql.Connection:
     if org_exist(org_name): return None
     else: return sql.connect(get_db_path_by_name(org_name))
 
-def get_db_path_by_name(org_name: str) -> str:
-    return os.path.join(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..','Organizations')),f"{org_name}.db")
+def get_db_path_by_name(org_name: str) -> pathlib.Path:
+    return pathlib.Path(__file__).parents[2] / "Organizations" / f"{org_name}.db"
 
 def create_all_tables(org_conn: sql.Connection, make_accts: bool = True):
     if make_accts: accts.create_table(org_conn)
@@ -35,3 +33,6 @@ def create_all_tables(org_conn: sql.Connection, make_accts: bool = True):
 def drop_all_tables(org_conn: sql.Connection, drop_accts: bool = True):
     if drop_accts: accts.drop_table(org_conn)
 
+if __name__ == "__main__":
+    print(isinstance(get_db_path_by_name("pass"), pathlib.Path))
+    print(org_exist("Primal"))
