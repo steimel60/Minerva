@@ -406,14 +406,17 @@ class APIGenerator:
 
     def _write_dockerfile(self):
         try:
-            # assumes flask_dir is relative to base_dir
+            # assumes all src code is present in parent folder to flask_dir
             self.printer.open_file(self.dockerfile)
             self.print(TextBlock().write_lines([
                 f'FROM {self.docker["image"]}',
                 f'WORKDIR {self.docker["workdir"]}',
                 f"COPY {self.config_file.name} requirements.txt ./",
                 "RUN pip install --no-cache-dir -r requirements.txt",
-                f"COPY src/* {self.flask_dir.name}/", # flattens all dirs in src
+                *[
+                    f"COPY {e.relative_to(self.base_dir)} {e.name}/"
+                    for e in self.flask_dir.parent.iterdir() if e.is_dir()
+                ],
                 "CMD {}".format(json.dumps(
                     [
                         "gunicorn", 

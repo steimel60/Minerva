@@ -5,6 +5,7 @@ from flask import (
     render_template,
     flash, g, redirect, session
 )
+import sqlite.accounts
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
