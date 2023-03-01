@@ -1,8 +1,8 @@
 import sqlite3
 
-def create_table(org_conn: sqlite3.Connection) -> None:
-    with org_conn:
-        org_conn.cursor().execute(
+def create_table(conn: sqlite3.Connection) -> None:
+    with conn:
+        conn.cursor().execute(
             """
             CREATE TABLE IF NOT EXISTS accts (
                 username TEXT NOT NULL PRIMARY KEY,
@@ -11,18 +11,18 @@ def create_table(org_conn: sqlite3.Connection) -> None:
             """
         )
 
-def drop_table(org_conn: sqlite3.Connection) -> None:
-    with org_conn:
-        org_conn.cursor().execute("DROP TABLE IF EXISTS accts")
+def drop_table(conn: sqlite3.Connection) -> None:
+    with conn:
+        conn.cursor().execute("DROP TABLE IF EXISTS accts")
 
 def insert_acct(
-    org_conn: sqlite3.Connection, 
+    conn: sqlite3.Connection, 
     username: str, 
     password: str
 ) -> bool:
     try:
-        with org_conn:
-            org_conn.cursor().execute(
+        with conn:
+            conn.cursor().execute(
                 "INSERT INTO accts VALUES (:username, :password)",
                 {
                     "username": username, 
@@ -35,19 +35,19 @@ def insert_acct(
 
     return True
 
-def get_acct(org_conn: sqlite3.Connection, username: str) -> str:
-    with org_conn:
-        return org_conn.cursor().execute(
+def get_acct(conn: sqlite3.Connection, username: str) -> str:
+    with conn:
+        return conn.cursor().execute(
             "SELECT name FROM accts WHERE username =:username",
             {
                 "username": username,
             }
         ).fetchone()[0]
 
-def username_exists(org_conn: sqlite3.Connection, username: str) -> bool:
-    with org_conn:
+def acct_exists(conn: sqlite3.Connection, username: str) -> bool:
+    with conn:
         return len(
-            org_conn.cursor().execute(
+            conn.cursor().execute(
                 "SELECT 1 FROM accts WHERE username =:username",
                 {
                     "username": username,
@@ -55,14 +55,14 @@ def username_exists(org_conn: sqlite3.Connection, username: str) -> bool:
             ).fetchall()
         ) > 0
 
-def is_valid_login(
-    org_conn: sqlite3.Connection,
+def is_valid_acct(
+    conn: sqlite3.Connection,
     username: str,
     password: str
 ) -> bool:
-    with org_conn:
+    with conn:
         return len(
-            org_conn.cursor().execute(
+            conn.cursor().execute(
                 "SELECT 1 FROM accts WHERE username =:username "
                 "AND password =:password",
                 {
