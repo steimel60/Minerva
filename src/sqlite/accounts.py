@@ -1,46 +1,73 @@
-import sqlite3 as sql
+import sqlite3
 
-def create_table(org_conn: sql.Connection):
+def create_table(org_conn: sqlite3.Connection) -> None:
     with org_conn:
-        c = org_conn.cursor()
-        c.execute("""CREATE TABLE IF NOT EXISTS accts (
-            username TEXT NOT NULL PRIMARY KEY,
-            password TEXT NOT NULL
-        )""")
+        org_conn.cursor().execute(
+            """
+            CREATE TABLE IF NOT EXISTS accts (
+                username TEXT NOT NULL PRIMARY KEY,
+                password TEXT NOT NULL
+            )
+            """
+        )
 
-def drop_table(org_conn: sql.Connection):
+def drop_table(org_conn: sqlite3.Connection) -> None:
     with org_conn:
-        c = org_conn.cursor()
-        c.execute("DROP TABLE IF EXISTS accts")
+        org_conn.cursor().execute("DROP TABLE IF EXISTS accts")
 
-def insert(org_conn: sql.Connection, username: str, password: str) -> bool:
+def insert_acct(
+    org_conn: sqlite3.Connection, 
+    username: str, 
+    password: str
+) -> bool:
     try:
         with org_conn:
-            c = org_conn.cursor()
-            c.execute("INSERT INTO accts VALUES (:username, :password)"
-            ,{'username':username, 'password':password})
-            return True
+            org_conn.cursor().execute(
+                "INSERT INTO accts VALUES (:username, :password)",
+                {
+                    "username": username, 
+                    "password": password,
+                }
+            )
     except Exception as e:
         print(e)
         return False
 
-def select_by_username(org_conn: sql.Connection, username: str):
-    with org_conn:
-        c = org_conn.cursor()
-        c.execute("""SELECT name FROM accts WHERE username =:username"""
-                    ,{'username':username})
-        return c.fetchone()[0]
+    return True
 
-def username_exist(org_conn: sql.Connection, username: str) -> bool:
+def get_acct(org_conn: sqlite3.Connection, username: str) -> str:
     with org_conn:
-         c = org_conn.cursor()
-         c.execute("""SELECT 1 FROM accts WHERE username =:username"""
-                    ,{'username':username})
-         return len(c.fetchall()) > 0
+        return org_conn.cursor().execute(
+            "SELECT name FROM accts WHERE username =:username",
+            {
+                "username": username,
+            }
+        ).fetchone()[0]
 
-def is_valid_login(org_conn: sql.Connection, username: str, password:str) -> bool:
+def username_exists(org_conn: sqlite3.Connection, username: str) -> bool:
     with org_conn:
-        c = org_conn.cursor()
-        c.execute("""SELECT 1 FROM accts WHERE username =:username AND password =:password"""
-                    ,{'username':username, 'password':password})
-        return len(c.fetchall()) > 0
+        return len(
+            org_conn.cursor().execute(
+                "SELECT 1 FROM accts WHERE username =:username",
+                {
+                    "username": username,
+                }
+            ).fetchall()
+        ) > 0
+
+def is_valid_login(
+    org_conn: sqlite3.Connection,
+    username: str,
+    password: str
+) -> bool:
+    with org_conn:
+        return len(
+            org_conn.cursor().execute(
+                "SELECT 1 FROM accts WHERE username =:username "
+                "AND password =:password",
+                {
+                    "username": username, 
+                    "password": password,
+                }
+            ).fetchall()
+        ) > 0
