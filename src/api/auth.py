@@ -40,7 +40,7 @@ def register():
         
         org_conn = orgs.connect_to_org(org)     
         if accts.acct_exists(org_conn, uname): # assumes accts table exists
-            return f"Account with username: {uname} already exists"
+            return f"Account with username: {uname} already exists", 400
         
         # THIS WILL BE DONE CLIENT SIDE IN FUTURE!!!!
         # OBVIOUSLY DO NOT SEND PLAINTEXT PASS OVER NETWORK!!!
@@ -75,4 +75,3 @@ def login():
 @bp.route("/logout", methods=[ "GET" ])
 def logout():
     return "logout", 200
-
