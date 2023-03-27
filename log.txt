@@ -1,0 +1,463 @@
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 27, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+ERROR:api.__init__:Exception on /auth/login [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 53, in login
+    if not db.login.good_login(org, uname, password):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/login.py", line 6, in good_login
+    orgs.org_exists(org_name)
+    ^^^^^^^^^^^^^^^
+AttributeError: module 'db.organization' has no attribute 'org_exists'
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 27, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 27, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 27, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+ERROR:api.__init__:Exception on /auth/login [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 53, in login
+    if not db.login.good_login(org, uname, password):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/login.py", line 6, in good_login
+    orgs.org_exists(org_name)
+    ^^^^^^^^^^^^^^^
+AttributeError: module 'db.organization' has no attribute 'org_exists'
+ERROR:api.__init__:Exception on /auth/login [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 53, in login
+    if not db.login.good_login(org, uname, password):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/login.py", line 6, in good_login
+    orgs.org_exists(org_name)
+    ^^^^^^^^^^^^^^^
+AttributeError: module 'db.organization' has no attribute 'org_exists'
+ERROR:api.__init__:Exception on /auth/login [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 53, in login
+    if not db.login.good_login(org, uname, password):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/login.py", line 6, in good_login
+    orgs.org_exists(org_name)
+    ^^^^^^^^^^^^^^^
+AttributeError: module 'db.organization' has no attribute 'org_exists'
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 27, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 27, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 27, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+ERROR:api.__init__:Exception on /auth/login [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 53, in login
+    if not db.login.good_login(org, uname, password):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/login.py", line 6, in good_login
+    orgs.org_exists(org_name)
+    ^^^^^^^^^^^^^^^
+AttributeError: module 'db.organization' has no attribute 'org_exists'
+ERROR:api.__init__:Exception on /auth/login [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 53, in login
+    if not db.login.good_login(org, uname, password):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/login.py", line 6, in good_login
+    orgs.org_exists(org_name)
+    ^^^^^^^^^^^^^^^
+AttributeError: module 'db.organization' has no attribute 'org_exists'
+ERROR:api.__init__:Exception on /auth/login [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 53, in login
+    if not db.login.good_login(org, uname, password):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/login.py", line 6, in good_login
+    orgs.org_exists(org_name)
+    ^^^^^^^^^^^^^^^
+AttributeError: module 'db.organization' has no attribute 'org_exists'
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 27, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 21, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 22, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 22, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 21, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 23, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 35, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
+ERROR:api.__init__:Exception on /auth/register [POST]
+Traceback (most recent call last):
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/.venv/lib/python3.11/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/api/auth.py", line 21, in register
+    if db.accounts.acct_exists(org_conn, uname): # assumes accts table exists
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mnovitt/Software/Github/Minerva/src/db/accounts.py", line 36, in acct_exists
+    conn.cursor().execute(
+sqlite3.OperationalError: no such table: accts
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
+DEBUG:root:Couldnt execute script in /Users/mnovitt/Software/Github/Minerva/tests/populate_tables.sql
+INFO:waitress:Serving on http://[::1]:3005
+INFO:waitress:Serving on http://127.0.0.1:3005
