@@ -4,9 +4,10 @@ COPY config.toml requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY src/db db/
 COPY src/api api/
-COPY tests/populate_tables.sql .
+COPY src/aux aux/
 
 # below is for debug purposes only, remove for prod
+COPY tests/populate_tables.sql db
 RUN apk update && apk upgrade
 RUN apk add --no-cache sqlite
 ###################################################
