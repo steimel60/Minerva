@@ -54,7 +54,3 @@ def login():
         return "Logged In", 200
     
     return "login", 200
-
-@bp.route("/logout", methods=[ "GET" ])
-def logout():
-    return "logout", 200

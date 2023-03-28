@@ -9,9 +9,8 @@ bp = Blueprint("sales", __name__, url_prefix="/sales")
 @stream_with_context
 @bp.route("/customer/purchases", methods=[ "GET", "POST" ])
 def customer_purchases():
-    # in future, get org from session, require session
     if request.method == "POST":
-        customer = request.form.get("customer")
+        customer, = aux.get_fields(request.form, ["customer"])
         if not customer:
             return "Bad Request, missing customer name", 400
 
