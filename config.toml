@@ -23,3 +23,7 @@ base_url = "auth"
 register = { path = "register", methods = [ "GET", "POST" ] }
 login = { path = "login", methods = [ "GET", "POST" ] }
 logout = { path = "logout", methods = [ "GET" ] }
+
+[db]
+orgs = [ "Primal" ]
+"sql files" = [ "accounts", "sales" ]
