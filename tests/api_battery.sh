@@ -39,3 +39,6 @@ echo "Login Testing"
 for tc in "${login_cases[@]}"; do
     eval "curl -X POST ${tc} localhost:3005/auth/login" && echo
 done && echo
+
+echo "Test customer purchase query"
+curl -X POST -F 'customer=sammy' localhost:3005/sales/customer/purchases
