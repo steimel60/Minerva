@@ -19,12 +19,6 @@ SQL_QUERIES = {
     """,
 }
 
-def get_customer_purchases(
-    conn: sqlite3.Connection,
-    customer: str
-) -> Optional[tuple]:
-    return db.generate_sql_result(
-        conn, 
-        SQL_QUERIES["customer purchases"], 
-        (customer,)
-    )
+
+def get_customer_purchases(conn: sqlite3.Connection, customer: str) -> Optional[tuple]:
+    return db.generate_sql_result(conn, SQL_QUERIES["customer purchases"], (customer,))

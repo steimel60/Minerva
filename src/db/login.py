@@ -1,13 +1,12 @@
 import sqlite3
 import db.organization as orgs, db.accounts as accts
 
+
 def good_login(org_name: str, username: str, password: str) -> bool:
-    return (
-        orgs.exists(org_name)
-        and accts.is_valid_acct(
-            orgs.connect(org_name), username, password
-        )
+    return orgs.exists(org_name) and accts.is_valid_acct(
+        orgs.connect(org_name), username, password
     )
+
 
 def is_pw_valid(password: str) -> list[bool, str]:
     valid = True
@@ -26,11 +25,8 @@ def is_pw_valid(password: str) -> list[bool, str]:
         msg += "\n\t- At least 1 numeric value required."
     return [valid, msg]
 
-def make_account(
-    org_conn: sqlite3.Connection, 
-    username: str, 
-    password: str
-) -> None:
+
+def make_account(org_conn: sqlite3.Connection, username: str, password: str) -> None:
     pw_results = is_pw_valid(password)
     if accts.acct_exists(org_conn, username):
         print(f"Username, {username}, already exists!")

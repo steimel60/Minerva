@@ -3,16 +3,16 @@ import pathlib
 import sqlite3
 
 import logging
+
 logging.basicConfig(filename="minerva.log", level=logging.DEBUG)
 
 dbs_dir = "Organizations"
 
+
 def run_SQL_script(db: sqlite3.Connection, sql_file: pathlib.Path) -> None:
     """Execute SQL commands in a file"""
     if not sql_file.is_file() or sql_file.suffix != ".sql":
-        raise FileNotFoundError(
-            f"Could not find sql file at: {sql_file}"
-        )
+        raise FileNotFoundError(f"Could not find sql file at: {sql_file}")
 
     try:
         db.executescript(sql_file.read_text())
@@ -21,12 +21,11 @@ def run_SQL_script(db: sqlite3.Connection, sql_file: pathlib.Path) -> None:
     except sqlite3.Error as e:
         logging.debug(f"Couldnt execute script in {sql_file}")
 
+
 def setup(
-        base_dir: pathlib.Path, 
-        orgs: list[str], 
-        sql_init_files: list[pathlib.Path]
-    ) -> None:
-    dbs_dir = base_dir / "Organizations" # overwrite global
+    base_dir: pathlib.Path, orgs: list[str], sql_init_files: list[pathlib.Path]
+) -> None:
+    dbs_dir = base_dir / "Organizations"  # overwrite global
     if not dbs_dir.exists():
         dbs_dir.mkdir()
 
@@ -39,6 +38,7 @@ def setup(
             for f in sql_init_files:
                 # ensure scripts are non-destructive!!!
                 run_SQL_script(conn, f)
+
 
 # customer purchases
 def generate_sql_result(
